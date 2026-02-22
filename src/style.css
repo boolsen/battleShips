@@ -1,3 +1,44 @@
 * {
-    color: red;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Color Scheme */
+:root {
+    color: auto;
+    --header-height: 100px;
+    --boardGame-gap: 20px;
+}
+
+.header {
+    height: var(--header-height);
+}
+
+.main {
+    display: grid;
+    place-items: center;
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--boardGame-gap);
+}
+
+.gameboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    width: min(calc(100svh - var(--header-height)), calc(calc(100svw - var(--boardGame-gap) / 2)));
+    aspect-ratio: 1;
+    gap: 0;
+}
+
+.cell {
+    border: 1px solid red;
+    aspect-ratio: 1;
+    &.computer-cell {
+        border: 1px solid blue;
+    }
+    .occupied {
+        background: grey;
+    }
 }
