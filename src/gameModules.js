@@ -57,7 +57,7 @@ class GameBoard {
         if (!placeShipCheck.shipPlacedAroundCell) {
             placeShipCheck.shipPlacedAroundCell = new Ship();
         }
-        
+
         this.grid[x][y].placeShip(placeShipCheck.shipPlacedAroundCell,x,y);
     }
 
@@ -121,6 +121,8 @@ class Cell {
     placeShip(ship, x, y) {
         this.ship = ship;
         ship.addCell(x,y);
+        console.log(this.element);
+        this.element.classList.add('occupied');
     }
 }
 

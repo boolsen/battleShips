@@ -51,7 +51,7 @@ body {
     &.computer-cell {
         border: 1px solid blue;
     }
-    .occupied {
+    &.occupied {
         background: grey;
     }
 }

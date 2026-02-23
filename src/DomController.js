@@ -41,14 +41,21 @@ export class DomController {
         if (!Number.isInteger(row) || !Number.isInteger(column)) {
             console.log('clicked outside of grid');
         } else {
-            console.log({parent, player, row, column});
+            console.log({parent, row, column});
         }
 
-        if (this.stateManager.isPlacement && player.name === "player") {
-            //PLACE SHIP
-        } else if (this.stateManager.isBombing && player.name === "computer") {
+        console.log({target});
+
+        if (this.stateManager.isPlacement && target.name === "player") {
+            this.PlaceShip(row, column, target);
+        } else if (this.stateManager.isBombing && target.name === "computer") {
             //BOMB TARGET CELL
         }
+    }
+
+    PlaceShip(row, column, player) {
+        console.log(player.gameBoard);
+        player.gameBoard.placeShipInCell(row, column);
     }
 
     CreateGridElements(gameBoard, targetContainer,cellClass) {
