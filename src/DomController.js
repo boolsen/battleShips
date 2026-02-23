@@ -1,5 +1,6 @@
 import {Ship,GameBoard,Cell} from "./gameModules.js";
 import {Player} from './Player.js';
+import { StateManager } from "./StateManager.js";
 
 export class DomController {
     constructor() {
@@ -12,9 +13,9 @@ export class DomController {
             player: new Player('player-gameboard','player-cell',this.boardSize),
             computer: new Player('computer-gameboard','computer-cell',this.boardSize),
         }
-        this.CreateGridElements(this.players.player.gameBoard, this.players.player.container, this.players.player.cellClass);
-        this.CreateGridElements(this.players.computer.gameBoard, this.players.computer.container, this.players.computer.cellClass);
+        this.CreateGridElementsForPlayers();
         this.containerAddEventListener();
+        this.stateManager = new StateManager();
         console.log("Controller initialization done");
     }
 
@@ -24,13 +25,22 @@ export class DomController {
         })
     }
 
+    CreateGridElementsForPlayers() {
+        for (let playerName in this.players) {
+            const player = this.players[playerName];
+            this.CreateGridElements(player.gameBoard, player.container, player.cellClass)
+        }
+    }
+
     containerClicked(event) {
         const row = parseInt(event.target.dataset.row);
         const column = parseInt(event.target.dataset.column);
+        const parent = event.target.parentNode.dataset.player;
+        const player = this.players[parent];
         if (!Number.isInteger(row) || !Number.isInteger(column)) {
             console.log('clicked outside of grid');
         } else {
-            console.log('clicked inside grid');
+            console.log({parent, player, row, column});
         }
     }
 
