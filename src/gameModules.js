@@ -28,7 +28,9 @@ class GameBoard {
         this.grid = [];
         this.initializeGrid(size);
         this.maxShipSize = 4;
+        this.maxShipCells = 15;
         this.gridSize = size;
+        this.shipCellsPlaced = 0;
     }
 
     initializeGrid(size) {
@@ -59,6 +61,7 @@ class GameBoard {
         }
 
         this.grid[x][y].placeShip(placeShipCheck.shipPlacedAroundCell,x,y);
+        this.shipCellsPlaced++;
     }
 
     checkShipOrientation(x, y, ship) {
@@ -77,7 +80,7 @@ class GameBoard {
     canPlaceShip(x,y) {
         const shipsPlacedAroundCell = [];
 
-        if (x < 0 || y < 0 || x >= this.gridSize || y >= this.gridSize) {
+        if (x < 0 || y < 0 || x >= this.gridSize || y >= this.gridSize || this.shipCellsPlaced >= this.maxShipCells) {
             return {canPlaceShip: false};
         }
 
@@ -98,13 +101,23 @@ class GameBoard {
             }
         }
 
-
         if (shipsPlacedAroundCell.length > 1) {
-            return {canPlaceShip: false};
-        } else if (shipsPlacedAroundCell === 0) {
-            return {canPlaceShip: true};
+            return {
+                canPlaceShip: false
+            };
+        } else if (shipsPlacedAroundCell.length === 0) {
+            return {
+                canPlaceShip: true
+            };
+        } else if (shipsPlacedAroundCell.length === 1 && shipsPlacedAroundCell[0].length >= this.maxShipSize) {
+            return {
+                canPlaceShip: false
+            };
         } else {
-            return {canPlaceShip: true, shipPlacedAroundCell: shipsPlacedAroundCell[0]};
+            return {
+                canPlaceShip: true, 
+                shipPlacedAroundCell: shipsPlacedAroundCell[0]
+            };
         }
     }
 }

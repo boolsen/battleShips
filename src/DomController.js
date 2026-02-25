@@ -44,8 +44,6 @@ export class DomController {
             console.log({parent, row, column});
         }
 
-        console.log({target});
-
         if (this.stateManager.isPlacement && target.name === "player") {
             this.PlaceShip(row, column, target);
         } else if (this.stateManager.isBombing && target.name === "computer") {
@@ -54,17 +52,15 @@ export class DomController {
     }
 
     PlaceShip(row, column, player) {
-        console.log(player.gameBoard);
         player.gameBoard.placeShipInCell(row, column);
     }
 
     CreateGridElements(gameBoard, targetContainer,cellClass) {
         const size = gameBoard.gridSize;
         const grid = gameBoard.grid;
-        console.log("test");
         for (let i = 0; i < size; i++) {
             for (let j = 0; j < size; j++) {
-                const newElement = this.CreateCellElement(i,j,cellClass);
+                const newElement = this.CreateCellElement(j,i,cellClass);
                 grid[i][j].element = newElement;
                 targetContainer.append(newElement);
             }
