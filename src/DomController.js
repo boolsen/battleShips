@@ -1,5 +1,5 @@
 import {Ship,GameBoard,Cell} from "./gameModules.js";
-import {Player} from './Player.js';
+import {Player,Computer} from './Player.js';
 import { StateManager } from "./StateManager.js";
 
 export class DomController {
@@ -9,8 +9,8 @@ export class DomController {
         this.playerContainer = document.querySelector('.player-gameboard');
         this.computerContainer = document.querySelector('.computer-gameboard');
         this.players = {
-            player: new Player('player-gameboard','player-cell',this.boardSize, "player"),
-            computer: new Player('computer-gameboard','computer-cell',this.boardSize, "computer"),
+            player: new Player('player-gameboard','player-cell',this.boardSize),
+            computer: new Computer('computer-gameboard','computer-cell',this.boardSize),
         }
         this.CreateGridElementsForPlayers();
         this.containerAddEventListener();
@@ -37,15 +37,9 @@ export class DomController {
         const parent = event.target.parentNode.dataset.player;
         const target = this.players[parent];
 
-/*         if (!Number.isInteger(row) || !Number.isInteger(column)) {
-            console.log('clicked outside of grid');
-        } else {
-            console.log({parent, row, column});
-        } */
-
-        if (this.stateManager.isPlacement && target.name === "player") {
+        if (this.stateManager.isPlacement && target.type === "player") {
             this.PlaceShip(row, column, target);
-        } else if (this.stateManager.isBombing && target.name === "computer") {
+        } else if (this.stateManager.isBombing && target.type === "computer") {
             //BOMB TARGET CELL
         }
     }
