@@ -4,7 +4,6 @@ import { StateManager } from "./StateManager.js";
 
 export class DomController {
     constructor() {
-        this.placementPhase = true;
         this.boardSize = 10;
         this.mainContainer = document.querySelector('.main');
         this.playerContainer = document.querySelector('.player-gameboard');
@@ -38,11 +37,11 @@ export class DomController {
         const parent = event.target.parentNode.dataset.player;
         const target = this.players[parent];
 
-        if (!Number.isInteger(row) || !Number.isInteger(column)) {
+/*         if (!Number.isInteger(row) || !Number.isInteger(column)) {
             console.log('clicked outside of grid');
         } else {
             console.log({parent, row, column});
-        }
+        } */
 
         if (this.stateManager.isPlacement && target.name === "player") {
             this.PlaceShip(row, column, target);
@@ -52,7 +51,14 @@ export class DomController {
     }
 
     PlaceShip(row, column, player) {
-        player.gameBoard.placeShipInCell(row, column);
+        const placementStatus = player.gameBoard.placeShipInCell(row, column);
+        if (placementStatus.maxShipCellsReached) {
+            this.ActivateBombingPhase();
+        }
+    }
+
+    ActivateBombingPhase() {
+        this.stateManager.setPhase("BOMBING");
     }
 
     CreateGridElements(gameBoard, targetContainer,cellClass) {

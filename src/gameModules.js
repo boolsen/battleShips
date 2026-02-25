@@ -43,16 +43,28 @@ class GameBoard {
     }
 
     placeShipInCell(x,y) {
+        if (this.shipCellsPlaced >= this.maxShipCells) {
+            return {
+                shipPlaced: false,
+                maxShipCellsReached: this.shipCellsPlaced >= this.maxShipCells
+            }
+        }
         const placeShipCheck = this.canPlaceShip(x,y);
         if (!placeShipCheck.canPlaceShip) {
             console.log("Can't place ship");
-            return;
+            return {
+                shipPlaced: false,
+                maxShipCellsReached: this.shipCellsPlaced >= this.maxShipCells
+            }
         }
 
         if (placeShipCheck.shipPlacedAroundCell) {
             if (!this.checkShipOrientation(x, y, placeShipCheck.shipPlacedAroundCell)) {
                 console.log("Can't place ship, wrong orientation");
-                return;
+                return {
+                    shipPlaced: false,
+                    maxShipCellsReached: this.shipCellsPlaced >= this.maxShipCells
+                }
             }
         }
 
@@ -62,6 +74,11 @@ class GameBoard {
 
         this.grid[x][y].placeShip(placeShipCheck.shipPlacedAroundCell,x,y);
         this.shipCellsPlaced++;
+
+        return {
+            shipPlaced: true,
+            maxShipCellsReached: this.shipCellsPlaced >= this.maxShipCells
+        }
     }
 
     checkShipOrientation(x, y, ship) {
@@ -134,7 +151,6 @@ class Cell {
     placeShip(ship, x, y) {
         this.ship = ship;
         ship.addCell(x,y);
-        console.log(this.element);
         this.element.classList.add('occupied');
     }
 }
