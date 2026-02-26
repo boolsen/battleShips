@@ -58,16 +58,6 @@ class GameBoard {
             }
         }
 
-        if (placeShipCheck.shipPlacedAroundCell) {
-            if (!this.checkShipOrientation(x, y, placeShipCheck.shipPlacedAroundCell)) {
-                console.log("Can't place ship, wrong orientation");
-                return {
-                    shipPlaced: false,
-                    maxShipCellsReached: this.shipCellsPlaced >= this.maxShipCells
-                }
-            }
-        }
-
         if (!placeShipCheck.shipPlacedAroundCell) {
             placeShipCheck.shipPlacedAroundCell = new Ship();
         }
@@ -81,7 +71,11 @@ class GameBoard {
         }
     }
 
-    checkShipOrientation(x, y, ship) {
+    getNewShip() {
+        return new Ship();
+    }
+
+    compareShipOrientation(x, y, ship) {
         const uniqueXCoords = new Set(ship.cells.map(c => c[0]));
         const uniqueYCoords = new Set(ship.cells.map(c => c[1]));
 
@@ -94,13 +88,8 @@ class GameBoard {
         return false;
     }
 
-    canPlaceShip(x,y) {
+    findShipsAroundCell(x,y) {
         const shipsPlacedAroundCell = [];
-
-        if (x < 0 || y < 0 || x >= this.gridSize || y >= this.gridSize || this.shipCellsPlaced >= this.maxShipCells) {
-            return {canPlaceShip: false};
-        }
-
         for (let dx = -1; dx <= 1; dx++) {
             for (let dy = -1; dy <= 1; dy++) {
 
@@ -116,7 +105,16 @@ class GameBoard {
                     }
                 }
             }
+        }  
+        return shipsPlacedAroundCell;
+    }
+
+    canPlaceShip(x,y) {
+        if (x < 0 || y < 0 || x >= this.gridSize || y >= this.gridSize || this.shipCellsPlaced >= this.maxShipCells) {
+            return {canPlaceShip: false};
         }
+
+        const shipsPlacedAroundCell = this.findShipsAroundCell(x,y);
 
         if (shipsPlacedAroundCell.length > 1) {
             return {
@@ -131,6 +129,11 @@ class GameBoard {
                 canPlaceShip: false
             };
         } else {
+            if (!this.compareShipOrientation(x, y, shipsPlacedAroundCell[0])) {
+                return {
+                    canPlaceShip: false
+                };
+            }
             return {
                 canPlaceShip: true, 
                 shipPlacedAroundCell: shipsPlacedAroundCell[0]

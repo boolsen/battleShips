@@ -13,11 +13,16 @@ export class Computer extends Player {
         super(containerClass, cellClass, boardSize); //Calls parent constructor
         this.type = "computer";
 
-        this.getComputerShipComposition();
+        this.InitializeComputerBoard();
     }
 
     InitializeComputerBoard() {
         const ships = this.getComputerShipComposition();
+        for(length in ships) {
+            for(let i = 0; i < ships[length]; i++) {
+                this.placeShip(length);
+            }
+        }
     }
 
     getComputerShipComposition() {
@@ -42,5 +47,81 @@ export class Computer extends Player {
             shipCells += tempShipLength;
         }
         return ships;
+    }
+
+    placeShip(shipSize) {
+        while (true) {
+            const row = Math.floor(Math.random() * this.gameBoard.gridSize);
+            const column = Math.floor(Math.random() * this.gameBoard.gridSize);
+
+            if (!this.gameBoard.canPlaceShip(row, column).canPlaceShip) {
+                continue;
+            }
+
+            const availablePlacementDirections = this.checkPlacementDirections(shipSize, row, column)
+
+            if (Object.keys(availablePlacementDirections) === 0) {
+                continue;
+            }
+
+            const chosenDirection = this.pickPlacementDirection(availablePlacementDirections,shipSize);
+            this.addShipToCells(chosenDirection,shipSize,row, column);
+        }
+    }
+
+    addShipToCells(chosenDirection) {
+        const newShip = this.gameBoard.getNewShip();
+        const cells = chosenDirection.cells;
+        for (let i = 0; i < cells.length; i++) {
+            this.gameBoard.placeShipInCell(
+                cells[i][0],
+                cells[i][1]
+            );
+        }
+    }
+
+    pickPlacementDirection(availablePlacementDirections,shipSize) {
+        const directions = Object.keys(availablePlacementDirections);
+        const randomDirection = directions[Math.floor(Math.random() * directions.length)];
+        return availablePlacementDirections[randomDirection];
+    }
+
+    checkPlacementDirections(shipSize, row, column) {
+        const boardSize = this.gameBoard.gridSize;
+        const availablePlacementDirections = {
+            right: {
+                vector: [1,0],
+                cells: []
+            },
+            left: {
+                vector: [-1,0],
+                cells: []
+            },
+            down: {
+                vector: [0,1],
+                cells: []
+            },
+            up: {
+                vector: [0,-1],
+                cells: []
+            }
+        }
+        const grid = this.gameBoard.grid;
+
+        for (let i = 1; i <= shipSize; i++) {
+            for (let direction in {...availablePlacementDirections}) {
+                console.log({direction});
+                const newRow = row + (i * availablePlacementDirections[direction].vector[0]);
+                const newColumn = column + (i * availablePlacementDirections[direction].vector[1]);
+
+                if(grid[newRow][newColumn].ship) {
+                    delete availablePlacementDirections[direction];
+                } else {
+                    availablePlacementDirections[direction].cells.push([newRow,newColumn])
+                }
+            }
+        }
+
+        return availablePlacementDirections;
     }
 }
