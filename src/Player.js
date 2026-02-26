@@ -12,12 +12,11 @@ export class Computer extends Player {
     constructor(containerClass, cellClass, boardSize, maxShipCells) {
         super(containerClass, cellClass, boardSize); //Calls parent constructor
         this.type = "computer";
-
-        this.InitializeComputerBoard();
     }
 
     InitializeComputerBoard() {
         const ships = this.getComputerShipComposition();
+        console.log(ships);
         for(length in ships) {
             for(let i = 0; i < ships[length]; i++) {
                 this.placeShip(length);
@@ -66,6 +65,7 @@ export class Computer extends Player {
 
             const chosenDirection = this.pickPlacementDirection(availablePlacementDirections,shipSize);
             this.addShipToCells(chosenDirection,shipSize,row, column);
+            break;
         }
     }
 
@@ -73,10 +73,12 @@ export class Computer extends Player {
         const newShip = this.gameBoard.getNewShip();
         const cells = chosenDirection.cells;
         for (let i = 0; i < cells.length; i++) {
-            this.gameBoard.placeShipInCell(
+            const result = this.gameBoard.placeShipInCell(
                 cells[i][0],
                 cells[i][1]
             );
+
+            console.log({result, i, chosenDirection});
         }
     }
 
@@ -110,9 +112,14 @@ export class Computer extends Player {
 
         for (let i = 1; i <= shipSize; i++) {
             for (let direction in {...availablePlacementDirections}) {
-                console.log({direction});
                 const newRow = row + (i * availablePlacementDirections[direction].vector[0]);
                 const newColumn = column + (i * availablePlacementDirections[direction].vector[1]);
+
+                if (
+                    newColumn < 0 || newRow < 0 || newColumn >= this.gameBoard.gridSize || newRow >= this.gameBoard.gridSize) {
+                    delete availablePlacementDirections[direction];
+                    continue;
+                }
 
                 if(grid[newRow][newColumn].ship) {
                     delete availablePlacementDirections[direction];

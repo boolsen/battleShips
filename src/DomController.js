@@ -13,6 +13,7 @@ export class DomController {
             computer: new Computer('computer-gameboard','computer-cell',this.boardSize),
         }
         this.CreateGridElementsForPlayers();
+        this.players.computer.InitializeComputerBoard();
         this.containerAddEventListener();
         this.stateManager = new StateManager();
         console.log("Controller initialization done");
