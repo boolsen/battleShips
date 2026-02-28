@@ -19,14 +19,23 @@ class Ship {
     }
 
     sinkShip() {
+        console.log(this.cells);
         for (let cell in this.cells) {
+            console.log(cell);
             cell.element.classList.add('sunken');
         }
     }
 
-    addCell(x,y) {
-        this.cells.push([x,y]);
+    addCell(cell) {
+        this.cells.push(cell);
         this.length++;
+    }
+
+    GetOrientation() {
+        
+        for (let cell of this.cells) {
+
+        }
     }
 }
 
@@ -109,8 +118,10 @@ class GameBoard {
     }
 
     compareShipOrientation(x, y, ship) {
-        const uniqueXCoords = new Set(ship.cells.map(c => c[0]));
-        const uniqueYCoords = new Set(ship.cells.map(c => c[1]));
+        const uniqueXCoords = new Set(ship.cells.map(c => c.xCoord));
+        const uniqueYCoords = new Set(ship.cells.map(c => c.yCoord));
+
+        console.log({uniqueXCoords,uniqueYCoords,x,y});
 
         const shipX = uniqueXCoords.values().next().value;
         const shipY = uniqueYCoords.values().next().value;
@@ -189,7 +200,7 @@ class Cell {
 
     placeShip(ship, x, y) {
         this.ship = ship;
-        ship.addCell(x,y);
+        ship.addCell(this);
         this.element.classList.add('occupied');
     }
 }
