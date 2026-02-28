@@ -19,9 +19,7 @@ class Ship {
     }
 
     sinkShip() {
-        console.log(this.cells);
-        for (let cell in this.cells) {
-            console.log(cell);
+        for (let cell of this.cells) {
             cell.element.classList.add('sunken');
         }
     }
@@ -44,14 +42,15 @@ class GameBoard {
         this.grid = [];
         this.initializeGrid(size);
         this.maxShipSize = 4;
-        this.maxShipCells = 15;
+        this.maxShipCells = 5;
         this.gridSize = size;
         this.shipCellsPlaced = 0;
-        this.ships = 0;
+        this.ships = [];
     }
 
     BombCell(row, column) {
         const cell = this.grid[row][column];
+        cell.hit = true;
         if (cell.element.classList.contains('bombed')) {
             return {
                 status: false,
@@ -78,7 +77,7 @@ class GameBoard {
         for (let i = 0; i < size; i++) {
             this.grid.push([]);
             for (let j = 0; j < size; j++) {
-                this.grid[i].push(new Cell(j,i));
+                this.grid[i].push(new Cell(i,j));
             }
         }
     }
@@ -100,8 +99,7 @@ class GameBoard {
         }
 
         if (!placeShipCheck.shipPlacedAroundCell) {
-            placeShipCheck.shipPlacedAroundCell = new Ship();
-            this.ships++;
+            placeShipCheck.shipPlacedAroundCell = this.getNewShip();
         }
 
         this.grid[x][y].placeShip(placeShipCheck.shipPlacedAroundCell,x,y);
@@ -114,14 +112,15 @@ class GameBoard {
     }
 
     getNewShip() {
-        return new Ship();
+        const ship =  new Ship();
+        console.log(this.ships);
+        this.ships.push(ship);
+        return ship;
     }
 
     compareShipOrientation(x, y, ship) {
         const uniqueXCoords = new Set(ship.cells.map(c => c.xCoord));
         const uniqueYCoords = new Set(ship.cells.map(c => c.yCoord));
-
-        console.log({uniqueXCoords,uniqueYCoords,x,y});
 
         const shipX = uniqueXCoords.values().next().value;
         const shipY = uniqueYCoords.values().next().value;
@@ -170,6 +169,7 @@ class GameBoard {
                 canPlaceShip: true
             };
         } else if (shipsPlacedAroundCell.length === 1 && shipsPlacedAroundCell[0].length >= this.maxShipSize) {
+            console.log({maxSizeShip: shipsPlacedAroundCell[0]});
             return {
                 canPlaceShip: false,
                 msg: "maxSize reached for ship"

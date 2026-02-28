@@ -13,6 +13,7 @@
     --celll-with-ship-player: rgb(26, 19, 97);
     --celll-with-ship-computer: rgb(97, 19, 19);
     --cell-bg-color: rgb(24, 56, 85);
+    --cell-bg-color-hover: rgb(35, 82, 126);
     --bg-color: #1d1e2cff;
     --player-grid-color: blue;
     --computer-grid-color: red;
@@ -28,6 +29,13 @@ body {
 
 .header {
     height: var(--header-height);
+    padding: 40px;
+    text-align: center;
+}
+
+.info-text {
+    color: var(--text-color);
+    text-align: center;
 }
 
 .main {
@@ -63,7 +71,7 @@ body {
     &.computer-cell {
         border: 1px solid var(--computer-grid-color);
     }
-    &.occupied.player-cell {
+    &.occupied{ /*.player-cell {*/
         background-color: var(--celll-with-ship-player);
         &.computer-cell {
             box-sizing: border-box; /* Remove */

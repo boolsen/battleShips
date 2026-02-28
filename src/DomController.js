@@ -8,6 +8,7 @@ export class DomController {
         this.mainContainer = document.querySelector('.main');
         this.playerContainer = document.querySelector('.player-gameboard');
         this.computerContainer = document.querySelector('.computer-gameboard');
+        this.infoTextEle = document.querySelector('.info-text');
         this.players = {
             player: new Player('player-gameboard','player-cell',this.boardSize),
             computer: new Computer('computer-gameboard','computer-cell',this.boardSize),
@@ -16,6 +17,7 @@ export class DomController {
         this.players.computer.InitializeComputerBoard();
         this.containerAddEventListener();
         this.stateManager = new StateManager();
+        this.gameOver = false;
         console.log("Controller initialization done");
     }
 
@@ -38,15 +40,49 @@ export class DomController {
         const parent = event.target.parentNode.dataset.player;
         const target = this.players[parent];
 
-        if (!target) {
+        if (!target || this.gameOver) {
             return;
         }
 
-        if (this.stateManager.isPlacement() && target.type === "player") {
+        if (this.stateManager.isPlacement() && target.type === "player" && !event.target.classList.contains("occupied")) {
             this.PlaceShip(row, column, target);
         } else if (this.stateManager.isBombing() && target.type === "computer") {
-            this.BombCell(row,column, target)
+            // Player bombs computer
+            this.BombCell(row,column, target);
+            const playerWin = this.players["computer"].CheckForOpponentWin();
+
+            if (playerWin) {
+                this.gameEnded("Player");
+                return;
+            }
+
+            // Computer bombs player
+            this.BombCell(row,column, this.players["player"]);
+            const computerWin = this.players["player"].CheckForOpponentWin();
+            //this.ComputerBomb()
+
+            if (playerWin) {
+                this.gameEnded("Computer");
+            }
         }
+    }
+
+    gameEnded(playerName) {
+        console.log(`${playerName} wins!`);
+        this.gameOver = true;
+        this.infoTextEle.textContent = `${playerName} wins! Reload to play again`;
+    }
+
+    ComputerBomb() {
+        const row = Math.floor(Math.round * this.players["computer"].gridSize);
+        const column = Math.floor(Math.round * this.players["computer"].gridSize);
+        const targetCell = players["player"].grid[row][column];
+
+        if (targetCell.hit) {
+            return;
+        }
+
+        this.BombCell(row,column,)
     }
 
     BombCell(row,column, player) {
@@ -57,11 +93,14 @@ export class DomController {
         const placementStatus = player.gameBoard.placeShipInCell(row, column);
         if (placementStatus.maxShipCellsReached) {
             this.ActivateBombingPhase();
+            this.playerContainer.classList.toggle('placement-phase');
+            this.computerContainer.classList.toggle('bombing-phase');
         }
     }
 
     ActivateBombingPhase() {
         this.stateManager.setPhase("BOMBING");
+        this.infoTextEle.textContent = 'Bomb your enemy!';
     }
 
     CreateGridElements(gameBoard, targetContainer,cellClass) {

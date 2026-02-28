@@ -6,6 +6,18 @@ export class Player {
         this.cellClass = cellClass;
         this.type = "player";
     }
+
+    CheckForOpponentWin() {
+        const shipsAfloat = this.gameBoard.ships.filter(ship => {
+            return !ship.sunk;
+        });
+
+        console.log(shipsAfloat);
+
+        if (shipsAfloat.length > 0) {return false};
+        
+        return true;
+    }
 }
 
 export class Computer extends Player {
@@ -16,7 +28,6 @@ export class Computer extends Player {
 
     InitializeComputerBoard() {
         const ships = this.getComputerShipComposition();
-        console.log(ships);
         for(length in ships) {
             for(let i = 0; i < ships[length]; i++) {
                 this.placeShip(length);
@@ -73,7 +84,7 @@ export class Computer extends Player {
     }
 
     addShipToCells(chosenDirection) {
-        const newShip = this.gameBoard.getNewShip();
+        //const newShip = this.gameBoard.getNewShip();
         const cells = chosenDirection.cells;
         for (let i = 0; i < cells.length; i++) {
             const result = this.gameBoard.placeShipInCell(
