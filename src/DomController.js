@@ -38,11 +38,19 @@ export class DomController {
         const parent = event.target.parentNode.dataset.player;
         const target = this.players[parent];
 
-        if (this.stateManager.isPlacement && target.type === "player") {
-            this.PlaceShip(row, column, target);
-        } else if (this.stateManager.isBombing && target.type === "computer") {
-            //BOMB TARGET CELL
+        if (!target) {
+            return;
         }
+
+        if (this.stateManager.isPlacement() && target.type === "player") {
+            this.PlaceShip(row, column, target);
+        } else if (this.stateManager.isBombing() && target.type === "computer") {
+            this.BombCell(row,column, target)
+        }
+    }
+
+    BombCell(row,column, player) {
+        player.gameBoard.BombCell(row, column);
     }
 
     PlaceShip(row, column, player) {

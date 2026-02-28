@@ -14,6 +14,13 @@ class Ship {
     isSunk(){
         if (this.hits >= this.length){
             this.sunk = true;
+            this.sinkShip();
+        }
+    }
+
+    sinkShip() {
+        for (let cell in this.cells) {
+            cell.element.classList.add('sunken');
         }
     }
 
@@ -31,6 +38,31 @@ class GameBoard {
         this.maxShipCells = 15;
         this.gridSize = size;
         this.shipCellsPlaced = 0;
+        this.ships = 0;
+    }
+
+    BombCell(row, column) {
+        const cell = this.grid[row][column];
+        if (cell.element.classList.contains('bombed')) {
+            return {
+                status: false,
+                msg: 'Already bombed that cell'
+            }
+        }
+
+        cell.element.classList.add('bombed');
+        const ship = cell.ship;
+        if (ship instanceof Ship) {
+            return this.ShipHit(ship);
+        }
+    }
+
+    ShipHit(ship) {
+        if (ship.sunk) {
+            return false;
+        }
+
+        return ship.hit();
     }
 
     initializeGrid(size) {
@@ -51,7 +83,7 @@ class GameBoard {
         }
         const placeShipCheck = this.canPlaceShip(x,y);
         if (!placeShipCheck.canPlaceShip) {
-            console.log("Can't place ship");
+            console.log(`Can't place ship, placeshipCheck, ${placeShipCheck.msg}`);
             return {
                 shipPlaced: false,
                 maxShipCellsReached: this.shipCellsPlaced >= this.maxShipCells
@@ -60,6 +92,7 @@ class GameBoard {
 
         if (!placeShipCheck.shipPlacedAroundCell) {
             placeShipCheck.shipPlacedAroundCell = new Ship();
+            this.ships++;
         }
 
         this.grid[x][y].placeShip(placeShipCheck.shipPlacedAroundCell,x,y);
@@ -111,7 +144,7 @@ class GameBoard {
 
     canPlaceShip(x,y) {
         if (x < 0 || y < 0 || x >= this.gridSize || y >= this.gridSize || this.shipCellsPlaced >= this.maxShipCells) {
-            return {canPlaceShip: false};
+            return {canPlaceShip: false, msg: "outside grid"};
         }
 
         const shipsPlacedAroundCell = this.findShipsAroundCell(x,y);
@@ -119,6 +152,7 @@ class GameBoard {
         if (shipsPlacedAroundCell.length > 1) {
             return {
                 canPlaceShip: false
+                ,msg: "more than one ship"
             };
         } else if (shipsPlacedAroundCell.length === 0) {
             return {
@@ -126,12 +160,14 @@ class GameBoard {
             };
         } else if (shipsPlacedAroundCell.length === 1 && shipsPlacedAroundCell[0].length >= this.maxShipSize) {
             return {
-                canPlaceShip: false
+                canPlaceShip: false,
+                msg: "maxSize reached for ship"
             };
         } else {
             if (!this.compareShipOrientation(x, y, shipsPlacedAroundCell[0])) {
                 return {
-                    canPlaceShip: false
+                    canPlaceShip: false,
+                    msg: "wrong orientation"
                 };
             }
             return {

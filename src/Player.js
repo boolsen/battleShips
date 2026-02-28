@@ -1,4 +1,4 @@
-import {GameBoard} from "./gameModules.js";
+import {GameBoard, Ship} from "./gameModules.js";
 export class Player {
     constructor(containerClass, cellClass, boardSize) {
         this.gameBoard = new GameBoard(boardSize),
@@ -58,13 +58,16 @@ export class Computer extends Player {
             }
 
             const availablePlacementDirections = this.checkPlacementDirections(shipSize, row, column)
-
-            if (Object.keys(availablePlacementDirections) === 0) {
+            
+            if (Object.keys(availablePlacementDirections).length === 0) {
                 continue;
             }
 
             const chosenDirection = this.pickPlacementDirection(availablePlacementDirections,shipSize);
-            this.addShipToCells(chosenDirection,shipSize,row, column);
+            this.addShipToCells(chosenDirection);
+            console.log("ship placed:", {
+                chosenDirection
+            });
             break;
         }
     }
@@ -77,8 +80,6 @@ export class Computer extends Player {
                 cells[i][0],
                 cells[i][1]
             );
-
-            console.log({result, i, chosenDirection});
         }
     }
 
@@ -121,7 +122,8 @@ export class Computer extends Player {
                     continue;
                 }
 
-                if(grid[newRow][newColumn].ship) {
+                const placementCheck = this.canPlaceNewShipCell(newRow,newColumn);
+                if(!this.canPlaceNewShipCell(newRow,newColumn)) {
                     delete availablePlacementDirections[direction];
                 } else {
                     availablePlacementDirections[direction].cells.push([newRow,newColumn])
@@ -130,5 +132,32 @@ export class Computer extends Player {
         }
 
         return availablePlacementDirections;
+    }
+
+    canPlaceNewShipCell(row,column) {
+        const vectors = [
+            [-1,-1],
+            [-1, 0],
+            [-1,1],
+            [0,-1],
+            [0,1],
+            [1,-1],
+            [1,0],
+            [1,1]
+        ]
+
+        for (let vector of vectors) {
+            const newRow = row + vector[0];
+            const newColumn = column + vector[1];
+            const grid = this.gameBoard.grid;
+            const boardSize = this.gameBoard.gridSize;
+            if (newRow < 0 || newRow >= boardSize || newColumn < 0 || newColumn >= boardSize) {
+                continue;
+            }
+            if(grid[newRow][newColumn].ship instanceof Ship) {
+                return false;
+            }
+        }
+        return true;
     }
 }

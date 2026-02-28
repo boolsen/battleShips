@@ -4,15 +4,26 @@
     box-sizing: border-box;
 }
 
-body {
-    container-type: inline-size;
-}
-
 /* Color Scheme */
 :root {
-    color: auto;
     --header-height: 100px;
     --boardGame-gap: 20px;
+    --text-color: #f7ebecff;
+    --thistle: #ddbdd5ff;
+    --celll-with-ship-player: rgb(26, 19, 97);
+    --celll-with-ship-computer: rgb(97, 19, 19);
+    --cell-bg-color: rgb(24, 56, 85);
+    --bg-color: #1d1e2cff;
+    --player-grid-color: blue;
+    --computer-grid-color: red;
+}
+
+body {
+    container-type: inline-size;
+    background-color: var(--bg-color);
+    width: 100svw;
+    height: 100svh;
+    color: var(--text-color);
 }
 
 .header {
@@ -46,12 +57,23 @@ body {
 }
 
 .cell {
-    border: 1px solid red;
+    border: 1px solid var(--player-grid-color);
+    background-color: var(--cell-bg-color);
     aspect-ratio: 1;
     &.computer-cell {
-        border: 1px solid blue;
+        border: 1px solid var(--computer-grid-color);
     }
-    &.occupied {
-        background: grey;
+    &.occupied.player-cell {
+        background-color: var(--celll-with-ship-player);
+        &.computer-cell {
+            box-sizing: border-box; /* Remove */
+            /* Dont show ship cells before they get tagged with hit class*/
+        }
+    }
+    &.bombed{
+        background-color: lightcoral;
+        &.occupied{
+            background-color: red;
+        }
     }
 }
